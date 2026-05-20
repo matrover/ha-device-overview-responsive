@@ -1,0 +1,12 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "Device Overview Responsive is already configured."
+    },
+    "step": {
+      "user": {
+        "description": "Enable responsive columns on Home Assistant device overview pages."
+      }
+    }
+  }
+}
