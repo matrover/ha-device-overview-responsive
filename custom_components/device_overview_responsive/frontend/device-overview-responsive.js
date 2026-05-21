@@ -1,5 +1,6 @@
 (() => {
-  const VERSION = "0.2.8";
+  const VERSION = "0.2.9";
+  const DEFAULT_GAP = 16;
   const STYLE_ID = "device-overview-responsive-style";
   const GRID_CLASS = "device-overview-responsive-grid";
   const INTERVAL_KEY = "__deviceOverviewResponsiveInterval";
@@ -31,7 +32,7 @@
         grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--dor-column-min, 320px)), 1fr)) !important;
         align-items: start !important;
         gap: var(--grid-card-gap, 16px) !important;
-        width: calc(100vw - 64px) !important;
+        width: calc(100vw - var(--grid-card-gap, 16px) - var(--grid-card-gap, 16px)) !important;
         max-width: none !important;
         margin-left: auto !important;
         margin-right: auto !important;
@@ -39,7 +40,7 @@
 
       @media (max-width: 870px) {
         .${GRID_CLASS} {
-          width: calc(100vw - 24px) !important;
+          width: calc(100vw - var(--grid-card-gap, 16px) - var(--grid-card-gap, 16px)) !important;
           max-width: none !important;
           grid-template-columns: 1fr !important;
         }
@@ -126,7 +127,7 @@
       const layoutColumnCount = columnChildren.length || directLayoutChildren.length;
       if (layoutColumnCount < 2) continue;
 
-      const targetWidth = Math.max(280, viewportWidth - 64);
+      const targetWidth = Math.max(280, viewportWidth - DEFAULT_GAP * 2);
       const className = String(node.className || "");
       const preferredName = /content|container|grid|layout|columns/i.test(className) ? 20 : 0;
       const score =
@@ -163,8 +164,8 @@
 
       const grid = bestGrid.node;
       const columnMin = viewportWidth >= 1200 ? 320 : 280;
-      const availableWidth = Math.max(columnMin, viewportWidth - 64);
-      const fittingColumns = Math.max(1, Math.floor((availableWidth + 16) / (columnMin + 16)));
+      const availableWidth = Math.max(columnMin, viewportWidth - DEFAULT_GAP * 2);
+      const fittingColumns = Math.max(1, Math.floor((availableWidth + DEFAULT_GAP) / (columnMin + DEFAULT_GAP)));
       const columnCount = Math.min(bestGrid.layoutColumnCount, fittingColumns);
       grid.classList.add(GRID_CLASS);
       grid.style.setProperty("--dor-column-count", String(columnCount));
