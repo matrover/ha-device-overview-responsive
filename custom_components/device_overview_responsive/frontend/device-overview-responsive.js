@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = "0.2.6";
+  const VERSION = "0.2.7";
   const STYLE_ID = "device-overview-responsive-style";
   const GRID_CLASS = "device-overview-responsive-grid";
   const INTERVAL_KEY = "__deviceOverviewResponsiveInterval";
@@ -28,7 +28,7 @@
     style.textContent = `
       .${GRID_CLASS} {
         display: grid !important;
-        grid-template-columns: repeat(var(--dor-column-count, auto-fit), minmax(min(100%, var(--dor-column-min, 320px)), 1fr)) !important;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--dor-column-min, 320px)), 1fr)) !important;
         align-items: start !important;
         gap: var(--grid-card-gap, 16px) !important;
         width: min(100%, calc(100vw - 96px)) !important;
@@ -52,6 +52,10 @@
         max-width: none !important;
       }
 
+      .${GRID_CLASS} > .column {
+        grid-column: auto !important;
+      }
+
       .${GRID_CLASS} > .fullwidth {
         grid-column: 1 / -1 !important;
       }
@@ -71,7 +75,12 @@
 
   const clearLayout = () => {
     for (const root of allRoots()) {
-      root.querySelectorAll?.(`.${GRID_CLASS}`).forEach((node) => node.classList.remove(GRID_CLASS));
+      root.querySelectorAll?.(`.${GRID_CLASS}`).forEach((node) => {
+        node.classList.remove(GRID_CLASS);
+        node.style.removeProperty("grid-template-columns");
+        node.style.removeProperty("--dor-column-count");
+        node.style.removeProperty("--dor-column-min");
+      });
     }
   };
 
@@ -160,6 +169,7 @@
       grid.classList.add(GRID_CLASS);
       grid.style.setProperty("--dor-column-count", String(columnCount));
       grid.style.setProperty("--dor-column-min", `${columnMin}px`);
+      grid.style.setProperty("grid-template-columns", `repeat(${columnCount}, minmax(0, 1fr))`, "important");
       summary.active = true;
       summary.grids += 1;
     }
