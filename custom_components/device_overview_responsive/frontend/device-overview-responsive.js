@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = "0.2.5";
+  const VERSION = "0.2.6";
   const STYLE_ID = "device-overview-responsive-style";
   const GRID_CLASS = "device-overview-responsive-grid";
   const INTERVAL_KEY = "__deviceOverviewResponsiveInterval";
@@ -28,7 +28,7 @@
     style.textContent = `
       .${GRID_CLASS} {
         display: grid !important;
-        grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--dor-column-min, 320px)), 1fr)) !important;
+        grid-template-columns: repeat(var(--dor-column-count, auto-fit), minmax(min(100%, var(--dor-column-min, 320px)), 1fr)) !important;
         align-items: start !important;
         gap: var(--grid-card-gap, 16px) !important;
         width: min(100%, calc(100vw - 96px)) !important;
@@ -52,7 +52,7 @@
         max-width: none !important;
       }
 
-      .${GRID_CLASS} > :not(ha-card):not(:has(ha-card)) {
+      .${GRID_CLASS} > .fullwidth {
         grid-column: 1 / -1 !important;
       }
     `;
@@ -113,21 +113,23 @@
       const directLayoutChildren = [...node.children].filter((child) =>
         child.localName === "ha-card" || child.querySelector?.("ha-card")
       );
-      if (directLayoutChildren.length < 2) continue;
+      const columnChildren = [...node.children].filter((child) => child.classList?.contains("column"));
+      const layoutColumnCount = columnChildren.length || directLayoutChildren.length;
+      if (layoutColumnCount < 2) continue;
 
       const targetWidth = Math.min(viewportWidth - 96, 1480);
       const className = String(node.className || "");
       const preferredName = /content|container|grid|layout|columns/i.test(className) ? 20 : 0;
       const score =
         count * 10 +
-        directLayoutChildren.length * 12 +
+        layoutColumnCount * 12 +
         preferredName -
         Math.abs(rect.width - targetWidth) / 35;
 
-      if (!best || score > best.score) best = { node, score };
+      if (!best || score > best.score) best = { node, score, layoutColumnCount };
     }
 
-    return best?.node || null;
+    return best || null;
   };
 
   const applyLayout = () => {
@@ -147,11 +149,17 @@
 
     for (const root of allRoots()) {
       injectStyle(root);
-      const grid = findBestGrid(root, viewportWidth);
-      if (!grid) continue;
+      const bestGrid = findBestGrid(root, viewportWidth);
+      if (!bestGrid) continue;
 
+      const grid = bestGrid.node;
+      const columnMin = viewportWidth >= 1200 ? 320 : 280;
+      const availableWidth = Math.min(viewportWidth - 96, 1480);
+      const fittingColumns = Math.max(1, Math.floor((availableWidth + 16) / (columnMin + 16)));
+      const columnCount = Math.min(bestGrid.layoutColumnCount, fittingColumns);
       grid.classList.add(GRID_CLASS);
-      grid.style.setProperty("--dor-column-min", viewportWidth >= 1200 ? "320px" : "280px");
+      grid.style.setProperty("--dor-column-count", String(columnCount));
+      grid.style.setProperty("--dor-column-min", `${columnMin}px`);
       summary.active = true;
       summary.grids += 1;
     }
