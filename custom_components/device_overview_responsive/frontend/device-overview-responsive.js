@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = "0.2.3";
+  const VERSION = "0.2.4";
   const STYLE_ID = "device-overview-responsive-style";
   const GRID_CLASS = "device-overview-responsive-grid";
   const INTERVAL_KEY = "__deviceOverviewResponsiveInterval";
@@ -20,7 +20,8 @@
   };
 
   const injectStyle = (root) => {
-    if (!root?.querySelector || root.querySelector(`#${STYLE_ID}`)) return;
+    const styleHost = root === document ? document.head : root;
+    if (!styleHost?.querySelector || styleHost.querySelector(`#${STYLE_ID}`)) return;
 
     const style = document.createElement("style");
     style.id = STYLE_ID;
@@ -51,7 +52,7 @@
         max-width: none !important;
       }
     `;
-    root.appendChild(style);
+    styleHost.appendChild(style);
   };
 
   const allRoots = () => {
