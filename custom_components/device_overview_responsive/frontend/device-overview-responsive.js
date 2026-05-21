@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = "0.2.4";
+  const VERSION = "0.2.5";
   const STYLE_ID = "device-overview-responsive-style";
   const GRID_CLASS = "device-overview-responsive-grid";
   const INTERVAL_KEY = "__deviceOverviewResponsiveInterval";
@@ -50,6 +50,10 @@
         width: 100% !important;
         min-width: 0 !important;
         max-width: none !important;
+      }
+
+      .${GRID_CLASS} > :not(ha-card):not(:has(ha-card)) {
+        grid-column: 1 / -1 !important;
       }
     `;
     styleHost.appendChild(style);
