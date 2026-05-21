@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = "0.2.7";
+  const VERSION = "0.2.8";
   const STYLE_ID = "device-overview-responsive-style";
   const GRID_CLASS = "device-overview-responsive-grid";
   const INTERVAL_KEY = "__deviceOverviewResponsiveInterval";
@@ -31,16 +31,16 @@
         grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--dor-column-min, 320px)), 1fr)) !important;
         align-items: start !important;
         gap: var(--grid-card-gap, 16px) !important;
-        width: min(100%, calc(100vw - 96px)) !important;
-        max-width: min(1480px, calc(100vw - 96px)) !important;
+        width: calc(100vw - 64px) !important;
+        max-width: none !important;
         margin-left: auto !important;
         margin-right: auto !important;
       }
 
       @media (max-width: 870px) {
         .${GRID_CLASS} {
-          width: min(100%, calc(100vw - 32px)) !important;
-          max-width: min(100%, calc(100vw - 32px)) !important;
+          width: calc(100vw - 24px) !important;
+          max-width: none !important;
           grid-template-columns: 1fr !important;
         }
       }
@@ -126,7 +126,7 @@
       const layoutColumnCount = columnChildren.length || directLayoutChildren.length;
       if (layoutColumnCount < 2) continue;
 
-      const targetWidth = Math.min(viewportWidth - 96, 1480);
+      const targetWidth = Math.max(280, viewportWidth - 64);
       const className = String(node.className || "");
       const preferredName = /content|container|grid|layout|columns/i.test(className) ? 20 : 0;
       const score =
@@ -163,7 +163,7 @@
 
       const grid = bestGrid.node;
       const columnMin = viewportWidth >= 1200 ? 320 : 280;
-      const availableWidth = Math.min(viewportWidth - 96, 1480);
+      const availableWidth = Math.max(columnMin, viewportWidth - 64);
       const fittingColumns = Math.max(1, Math.floor((availableWidth + 16) / (columnMin + 16)));
       const columnCount = Math.min(bestGrid.layoutColumnCount, fittingColumns);
       grid.classList.add(GRID_CLASS);
