@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = "0.2.2";
+  const VERSION = "0.2.3";
   const STYLE_ID = "device-overview-responsive-style";
   const GRID_CLASS = "device-overview-responsive-grid";
   const INTERVAL_KEY = "__deviceOverviewResponsiveInterval";
@@ -46,8 +46,9 @@
 
       .${GRID_CLASS} > *,
       .${GRID_CLASS} ha-card {
+        width: 100% !important;
         min-width: 0 !important;
-        max-width: 100% !important;
+        max-width: none !important;
       }
     `;
     root.appendChild(style);
@@ -92,7 +93,6 @@
       "home-assistant",
       "hassio-main",
       "hass-router-page",
-      "hass-subpage",
       "ha-panel-config",
     ]);
 
