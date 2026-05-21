@@ -1,8 +1,9 @@
 (() => {
-  const VERSION = "0.2.0";
+  const VERSION = "0.2.2";
   const STYLE_ID = "device-overview-responsive-style";
   const GRID_CLASS = "device-overview-responsive-grid";
   const INTERVAL_KEY = "__deviceOverviewResponsiveInterval";
+  const DEVICE_PAGE_RE = /\/config\/devices\/device\//;
 
   const rectOf = (el) => {
     const rect = el?.getBoundingClientRect?.();
@@ -26,7 +27,7 @@
     style.textContent = `
       .${GRID_CLASS} {
         display: grid !important;
-        grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)) !important;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--dor-column-min, 320px)), 1fr)) !important;
         align-items: start !important;
         gap: var(--grid-card-gap, 16px) !important;
         width: min(100%, calc(100vw - 96px)) !important;
@@ -52,12 +53,20 @@
     root.appendChild(style);
   };
 
-  const isDeviceOverviewRoot = (root, host) => {
-    const hostName = (host?.localName || "").toLowerCase();
-    if (hostName.includes("config-device") || hostName.includes("device-page")) return true;
+  const allRoots = () => {
+    const roots = [document];
+    walkAll(document.body, (host) => {
+      if (host.shadowRoot) roots.push(host.shadowRoot);
+    });
+    return roots;
+  };
 
-    const text = String(root?.textContent || "");
-    return text.includes("Device info") && text.includes("Activity");
+  const isDeviceOverviewPage = () => DEVICE_PAGE_RE.test(window.location.pathname);
+
+  const clearLayout = () => {
+    for (const root of allRoots()) {
+      root.querySelectorAll?.(`.${GRID_CLASS}`).forEach((node) => node.classList.remove(GRID_CLASS));
+    }
   };
 
   const findBestGrid = (root, viewportWidth) => {
@@ -78,17 +87,37 @@
       }
     }
 
+    const blockedNames = new Set([
+      "body",
+      "home-assistant",
+      "hassio-main",
+      "hass-router-page",
+      "hass-subpage",
+      "ha-panel-config",
+    ]);
+
     let best = null;
     for (const [node, count] of parents) {
       if (count < 3) continue;
+      const localName = (node.localName || "").toLowerCase();
+      if (blockedNames.has(localName)) continue;
+
       const rect = rectOf(node);
       if (!rect || rect.width < 280) continue;
 
       const directLayoutChildren = [...node.children].filter((child) =>
         child.localName === "ha-card" || child.querySelector?.("ha-card")
       );
+      if (directLayoutChildren.length < 2) continue;
+
       const targetWidth = Math.min(viewportWidth - 96, 1480);
-      const score = count * 10 + directLayoutChildren.length * 7 - Math.abs(rect.width - targetWidth) / 40;
+      const className = String(node.className || "");
+      const preferredName = /content|container|grid|layout|columns/i.test(className) ? 20 : 0;
+      const score =
+        count * 10 +
+        directLayoutChildren.length * 12 +
+        preferredName -
+        Math.abs(rect.width - targetWidth) / 35;
 
       if (!best || score > best.score) best = { node, score };
     }
@@ -98,20 +127,37 @@
 
   const applyLayout = () => {
     const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
-    if (viewportWidth < 520) return;
+    const summary = {
+      active: false,
+      page: window.location.pathname,
+      viewportWidth,
+      grids: 0,
+    };
 
-    walkAll(document.body, (host) => {
-      const root = host.shadowRoot;
-      if (!root || !isDeviceOverviewRoot(root, host)) return;
+    clearLayout();
+    if (!isDeviceOverviewPage() || viewportWidth < 520) {
+      window.__deviceOverviewResponsiveLastRun = summary;
+      return summary;
+    }
 
+    for (const root of allRoots()) {
       injectStyle(root);
       const grid = findBestGrid(root, viewportWidth);
-      grid?.classList.add(GRID_CLASS);
-    });
+      if (!grid) continue;
+
+      grid.classList.add(GRID_CLASS);
+      grid.style.setProperty("--dor-column-min", viewportWidth >= 1200 ? "320px" : "280px");
+      summary.active = true;
+      summary.grids += 1;
+    }
+
+    window.__deviceOverviewResponsiveLastRun = summary;
+    return summary;
   };
 
   window.clearInterval(window[INTERVAL_KEY]);
   window[INTERVAL_KEY] = window.setInterval(applyLayout, 1000);
+  window.__deviceOverviewResponsiveApply = applyLayout;
   window.addEventListener("location-changed", () => {
     window.setTimeout(applyLayout, 0);
     window.setTimeout(applyLayout, 300);
