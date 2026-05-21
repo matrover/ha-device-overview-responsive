@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = "0.2.9";
+  const VERSION = "0.3.0";
   const DEFAULT_GAP = 16;
   const STYLE_ID = "device-overview-responsive-style";
   const GRID_CLASS = "device-overview-responsive-grid";
@@ -32,15 +32,16 @@
         grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--dor-column-min, 320px)), 1fr)) !important;
         align-items: start !important;
         gap: var(--grid-card-gap, 16px) !important;
-        width: calc(100vw - var(--grid-card-gap, 16px) - var(--grid-card-gap, 16px)) !important;
+        box-sizing: border-box !important;
+        width: auto !important;
         max-width: none !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
+        margin-left: var(--grid-card-gap, 16px) !important;
+        margin-right: var(--grid-card-gap, 16px) !important;
       }
 
       @media (max-width: 870px) {
         .${GRID_CLASS} {
-          width: calc(100vw - var(--grid-card-gap, 16px) - var(--grid-card-gap, 16px)) !important;
+          width: auto !important;
           max-width: none !important;
           grid-template-columns: 1fr !important;
         }
@@ -55,6 +56,12 @@
 
       .${GRID_CLASS} > .column {
         grid-column: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+      }
+
+      .${GRID_CLASS} > .column:not(:has(ha-card)) {
+        display: none !important;
       }
 
       .${GRID_CLASS} > .fullwidth {
@@ -123,7 +130,10 @@
       const directLayoutChildren = [...node.children].filter((child) =>
         child.localName === "ha-card" || child.querySelector?.("ha-card")
       );
-      const columnChildren = [...node.children].filter((child) => child.classList?.contains("column"));
+      const columnChildren = [...node.children].filter((child) => {
+        const childRect = rectOf(child);
+        return child.classList?.contains("column") && childRect && child.querySelector?.("ha-card");
+      });
       const layoutColumnCount = columnChildren.length || directLayoutChildren.length;
       if (layoutColumnCount < 2) continue;
 

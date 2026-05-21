@@ -8,8 +8,7 @@ Validate that Device Overview Responsive expands Home Assistant device overview 
 
 1. Wide desktop device page
    - Open a device page with at least three device columns.
-   - Expected: grid width is `window.innerWidth - 32px` when the HA gap is `16px`.
-   - Expected: left and right margins are each about `16px`.
+   - Expected: left and right grid margins equal the vertical card gap, normally about `16px`.
    - Expected: three device columns stay side by side when there is enough room.
 
 2. Medium desktop/tablet width
@@ -34,6 +33,8 @@ Validate that Device Overview Responsive expands Home Assistant device overview 
 
 6. Edge cases
    - Device page with an empty middle column.
+   - Device page with a warning/repair card before the main device info.
+   - Device page with disabled entities or configuration cards.
    - Very wide viewport.
    - Browser resize after page load.
    - Hard refresh/new tab after HACS update.
