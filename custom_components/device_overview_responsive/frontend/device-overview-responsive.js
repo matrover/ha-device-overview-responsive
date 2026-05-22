@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = "0.3.0";
+  const VERSION = "0.3.1";
   const DEFAULT_GAP = 16;
   const STYLE_ID = "device-overview-responsive-style";
   const GRID_CLASS = "device-overview-responsive-grid";
@@ -28,8 +28,8 @@
     style.id = STYLE_ID;
     style.textContent = `
       .${GRID_CLASS} {
-        display: grid !important;
-        grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--dor-column-min, 320px)), 1fr)) !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
         align-items: start !important;
         gap: var(--grid-card-gap, 16px) !important;
         box-sizing: border-box !important;
@@ -43,7 +43,10 @@
         .${GRID_CLASS} {
           width: auto !important;
           max-width: none !important;
-          grid-template-columns: 1fr !important;
+        }
+
+        .${GRID_CLASS} > .column {
+          flex-basis: 100% !important;
         }
       }
 
@@ -55,17 +58,19 @@
       }
 
       .${GRID_CLASS} > .column {
-        grid-column: auto !important;
+        display: block !important;
+        flex: 1 1 var(--dor-column-min, 320px) !important;
         min-width: 0 !important;
         max-width: none !important;
       }
 
-      .${GRID_CLASS} > .column:not(:has(ha-card)) {
-        display: none !important;
+      .${GRID_CLASS} > :not(.column):not(.fullwidth) {
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
       }
 
       .${GRID_CLASS} > .fullwidth {
-        grid-column: 1 / -1 !important;
+        flex: 1 1 100% !important;
       }
     `;
     styleHost.appendChild(style);
@@ -85,7 +90,6 @@
     for (const root of allRoots()) {
       root.querySelectorAll?.(`.${GRID_CLASS}`).forEach((node) => {
         node.classList.remove(GRID_CLASS);
-        node.style.removeProperty("grid-template-columns");
         node.style.removeProperty("--dor-column-count");
         node.style.removeProperty("--dor-column-min");
       });
@@ -132,7 +136,7 @@
       );
       const columnChildren = [...node.children].filter((child) => {
         const childRect = rectOf(child);
-        return child.classList?.contains("column") && childRect && child.querySelector?.("ha-card");
+        return child.classList?.contains("column") && childRect;
       });
       const layoutColumnCount = columnChildren.length || directLayoutChildren.length;
       if (layoutColumnCount < 2) continue;
@@ -180,7 +184,6 @@
       grid.classList.add(GRID_CLASS);
       grid.style.setProperty("--dor-column-count", String(columnCount));
       grid.style.setProperty("--dor-column-min", `${columnMin}px`);
-      grid.style.setProperty("grid-template-columns", `repeat(${columnCount}, minmax(0, 1fr))`, "important");
       summary.active = true;
       summary.grids += 1;
     }

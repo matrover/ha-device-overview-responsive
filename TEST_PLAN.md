@@ -35,6 +35,7 @@ Validate that Device Overview Responsive expands Home Assistant device overview 
    - Device page with an empty middle column.
    - Device page with a warning/repair card before the main device info.
    - Device page with disabled entities or configuration cards.
+   - Device page where controls are rendered in a column without a plain light-DOM `ha-card`.
    - Very wide viewport.
    - Browser resize after page load.
    - Hard refresh/new tab after HACS update.
