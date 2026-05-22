@@ -10,6 +10,7 @@ Validate that Device Overview Responsive expands Home Assistant device overview 
    - Open a device page with at least three device columns.
    - Expected: left and right grid margins equal the vertical card gap, normally about `16px`.
    - Expected: three device columns stay side by side when there is enough room.
+   - Expected: three-column layouts use a 2/8, 4/8, 2/8 width distribution.
 
 2. Medium desktop/tablet width
    - Test around 900-1200px viewport width.

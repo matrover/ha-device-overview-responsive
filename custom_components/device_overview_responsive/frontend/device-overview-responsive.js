@@ -1,8 +1,10 @@
 (() => {
-  const VERSION = "0.3.2";
+  const VERSION = "0.3.3";
   const DEFAULT_GAP = 16;
   const STYLE_ID = "device-overview-responsive-style";
   const GRID_CLASS = "device-overview-responsive-grid";
+  const OUTER_COLUMN_CLASS = "device-overview-responsive-outer-column";
+  const MIDDLE_COLUMN_CLASS = "device-overview-responsive-middle-column";
   const INTERVAL_KEY = "__deviceOverviewResponsiveInterval";
   const DEVICE_PAGE_RE = /\/config\/devices\/device\//;
 
@@ -49,8 +51,16 @@
       .${GRID_CLASS} > .column {
         display: block !important;
         flex: 1 1 var(--dor-column-min, 320px) !important;
-        min-width: 0 !important;
+        min-width: var(--dor-column-min, 320px) !important;
         max-width: none !important;
+      }
+
+      .${GRID_CLASS} > .${OUTER_COLUMN_CLASS} {
+        flex: 2 1 0 !important;
+      }
+
+      .${GRID_CLASS} > .${MIDDLE_COLUMN_CLASS} {
+        flex: 4 1 0 !important;
       }
 
       .${GRID_CLASS} > :not(.column):not(.fullwidth) {
@@ -89,6 +99,9 @@
   const clearLayout = () => {
     for (const root of allRoots()) {
       root.querySelectorAll?.(`.${GRID_CLASS}`).forEach((node) => {
+        [...node.children].forEach((child) => {
+          child.classList?.remove(OUTER_COLUMN_CLASS, MIDDLE_COLUMN_CLASS);
+        });
         node.classList.remove(GRID_CLASS);
         node.style.removeProperty("--dor-column-count");
         node.style.removeProperty("--dor-column-min");
@@ -184,6 +197,17 @@
       grid.classList.add(GRID_CLASS);
       grid.style.setProperty("--dor-column-count", String(columnCount));
       grid.style.setProperty("--dor-column-min", `${columnMin}px`);
+
+      const columns = [...grid.children].filter((child) => {
+        const childRect = rectOf(child);
+        return child.classList?.contains("column") && childRect;
+      });
+      if (columns.length === 3) {
+        columns[0].classList.add(OUTER_COLUMN_CLASS);
+        columns[1].classList.add(MIDDLE_COLUMN_CLASS);
+        columns[2].classList.add(OUTER_COLUMN_CLASS);
+      }
+
       summary.active = true;
       summary.grids += 1;
     }
