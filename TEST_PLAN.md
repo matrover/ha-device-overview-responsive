@@ -34,17 +34,20 @@ Validate that Device Overview Responsive expands Home Assistant device overview 
 6. Edge cases
    - Device page with an empty middle column.
    - Device page with a warning/repair card before the main device info.
+   - Device page where a warning/repair card must span the full width while Controls, Sensors and Activity stay visible below it.
    - Device page with disabled entities or configuration cards.
    - Device page where controls are rendered in a column without a plain light-DOM `ha-card`.
    - Very wide viewport.
    - Browser resize after page load.
    - Hard refresh/new tab after HACS update.
+   - Frontend module URL includes a version query string so proxy/browser cache does not keep an old module.
    - Expected: no frontend console errors from `device-overview-responsive.js`.
 
 ## Automated Checks
 
 - JavaScript syntax check.
 - Python compile check for the integration files.
+- Browser-rendered fixture checks at wide, medium and mobile widths.
 - Home Assistant integration state is `loaded`.
 - HACS installed version matches the release.
 - Home Assistant error log contains no `device_overview` errors.
