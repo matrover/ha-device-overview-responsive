@@ -86,7 +86,7 @@ The integration serves and registers this frontend module automatically:
 The registered URL includes a version query string, for example:
 
 ```text
-/device_overview_responsive/device-overview-responsive.js?v=0.3.7
+/device_overview_responsive/device-overview-responsive.js?v=0.3.8
 ```
 
 ## Configuration
@@ -98,7 +98,14 @@ Available option:
 - `Maximum total column width`: caps the complete column container width in pixels.
 
 Use `0` to keep the current unlimited responsive behavior. This is the default.
-After changing the value, refresh the browser tab.
+
+After changing this option:
+
+1. Save the integration configuration.
+2. Hard refresh the browser tab or restart the Home Assistant companion app.
+
+You do not need to restart Home Assistant after changing only this option.
+Installing or updating the integration through HACS still requires a Home Assistant restart.
 
 ## How It Works
 
@@ -126,14 +133,15 @@ will not grow beyond that pixel value.
 - It only targets built-in Home Assistant device overview pages under `/config/devices/device/...`.
 - Home Assistant frontend internals can change between releases, so layout detection may need updates after major frontend changes.
 - HACS, reverse proxies, Cloudflare, browsers, and companion apps may cache old frontend modules until a hard refresh or app restart.
-- Changing the maximum width option may require a browser refresh.
+- Installing or updating this integration requires a Home Assistant restart.
+- Changing the maximum width option requires a browser refresh, not a Home Assistant restart.
 
 ## Troubleshooting
 
 - Layout unchanged: confirm the integration is installed and added under Settings > Devices & services.
 - Old layout still visible: hard refresh the browser or restart the Home Assistant companion app.
 - Still seeing an old version: check that the loaded module URL contains the current `?v=` version.
-- Max width not applied: check the integration Configure dialog and refresh the browser after saving.
+- Max width not applied: check the integration Configure dialog and hard refresh the browser after saving.
 - Columns look wrong after resizing: wait a second or refresh; the module reapplies after route changes and resize events.
 - A column disappears or clips: update to the latest release and hard refresh the browser.
 

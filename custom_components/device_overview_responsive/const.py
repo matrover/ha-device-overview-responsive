@@ -2,7 +2,7 @@
 
 DOMAIN = "device_overview_responsive"
 NAME = "Device Overview Responsive"
-VERSION = "0.3.7"
+VERSION = "0.3.8"
 CONF_MAX_WIDTH = "max_width"
 
 URL_BASE = f"/{DOMAIN}"

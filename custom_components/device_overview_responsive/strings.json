@@ -12,12 +12,12 @@
   "options": {
     "step": {
       "init": {
-        "description": "Configure the responsive device overview layout.",
+        "description": "Configure the responsive device overview layout. After saving, refresh the browser tab. Installing or updating this integration still requires a Home Assistant restart.",
         "data": {
           "max_width": "Maximum total column width"
         },
         "data_description": {
-          "max_width": "Maximum width in pixels for the complete column container. Use 0 for unlimited responsive width."
+          "max_width": "Maximum width in pixels for the complete column container. Use 0 for unlimited responsive width. Refresh the browser tab after changing this value."
         }
       }
     }
