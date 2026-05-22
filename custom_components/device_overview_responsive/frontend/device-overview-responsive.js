@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = "0.3.1";
+  const VERSION = "0.3.2";
   const DEFAULT_GAP = 16;
   const STYLE_ID = "device-overview-responsive-style";
   const GRID_CLASS = "device-overview-responsive-grid";
@@ -39,17 +39,6 @@
         margin-right: var(--grid-card-gap, 16px) !important;
       }
 
-      @media (max-width: 870px) {
-        .${GRID_CLASS} {
-          width: auto !important;
-          max-width: none !important;
-        }
-
-        .${GRID_CLASS} > .column {
-          flex-basis: 100% !important;
-        }
-      }
-
       .${GRID_CLASS} > *,
       .${GRID_CLASS} ha-card {
         width: 100% !important;
@@ -71,6 +60,17 @@
 
       .${GRID_CLASS} > .fullwidth {
         flex: 1 1 100% !important;
+      }
+
+      @media (max-width: 870px) {
+        .${GRID_CLASS} {
+          width: auto !important;
+          max-width: none !important;
+        }
+
+        .${GRID_CLASS} > .column {
+          flex: 1 1 100% !important;
+        }
       }
     `;
     styleHost.appendChild(style);

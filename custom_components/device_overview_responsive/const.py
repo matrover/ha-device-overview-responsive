@@ -2,7 +2,7 @@
 
 DOMAIN = "device_overview_responsive"
 NAME = "Device Overview Responsive"
-VERSION = "0.3.1"
+VERSION = "0.3.2"
 
 URL_BASE = f"/{DOMAIN}"
 MODULE_FILENAME = "device-overview-responsive.js"

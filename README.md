@@ -7,7 +7,7 @@ Small Home Assistant integration for HACS. It loads a frontend module globally s
 ## Features
 
 - Detects Home Assistant device overview pages.
-- Changes the card container to an auto-fitting CSS grid.
+- Changes the card container to a wrapping flex layout.
 - Uses one column on narrow screens.
 - Re-applies after Home Assistant route changes and browser resizing.
 
