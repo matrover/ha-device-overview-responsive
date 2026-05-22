@@ -19,7 +19,7 @@ large device pages, ESPHome devices, Z-Wave devices, Zigbee devices,
 diagnostic-heavy integrations, and dashboards where the default device overview
 leaves too much empty space.
 
-![Anonymized Device Overview Responsive preview](docs/preview.svg)
+<img width="1564" height="816" alt="image" src="https://github.com/user-attachments/assets/7723093a-1ef0-439c-b9f4-6f09941dde03" />
 
 ## Search keywords
 
