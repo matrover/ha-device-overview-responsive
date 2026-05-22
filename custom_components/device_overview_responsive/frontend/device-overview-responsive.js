@@ -1,12 +1,19 @@
 (() => {
-  const VERSION = "0.3.5";
+  const VERSION = "0.3.6";
   const DEFAULT_GAP = 16;
   const STYLE_ID = "device-overview-responsive-style";
   const GRID_CLASS = "device-overview-responsive-grid";
+  const LIMITED_WIDTH_CLASS = "device-overview-responsive-limited-width";
   const OUTER_COLUMN_CLASS = "device-overview-responsive-outer-column";
   const MIDDLE_COLUMN_CLASS = "device-overview-responsive-middle-column";
   const INTERVAL_KEY = "__deviceOverviewResponsiveInterval";
   const DEVICE_PAGE_RE = /\/config\/devices\/device\//;
+  const MODULE_SRC =
+    document.currentScript?.src ||
+    [...document.scripts].find((script) => script.src.includes("device-overview-responsive.js"))?.src ||
+    "";
+  const MODULE_PARAMS = new URL(MODULE_SRC || window.location.href).searchParams;
+  const CONFIGURED_MAX_WIDTH = Math.max(0, Number(MODULE_PARAMS.get("max_width")) || 0);
 
   const rectOf = (el) => {
     const rect = el?.getBoundingClientRect?.();
@@ -39,6 +46,13 @@
         max-width: none !important;
         margin-left: var(--grid-card-gap, 16px) !important;
         margin-right: var(--grid-card-gap, 16px) !important;
+      }
+
+      .${GRID_CLASS}.${LIMITED_WIDTH_CLASS} {
+        width: min(calc(100% - var(--grid-card-gap, 16px) * 2), var(--dor-grid-max-width)) !important;
+        max-width: var(--dor-grid-max-width) !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
       }
 
       .${GRID_CLASS} > *,
@@ -102,9 +116,10 @@
         [...node.children].forEach((child) => {
           child.classList?.remove(OUTER_COLUMN_CLASS, MIDDLE_COLUMN_CLASS);
         });
-        node.classList.remove(GRID_CLASS);
+        node.classList.remove(GRID_CLASS, LIMITED_WIDTH_CLASS);
         node.style.removeProperty("--dor-column-count");
         node.style.removeProperty("--dor-column-min");
+        node.style.removeProperty("--dor-grid-max-width");
       });
     }
   };
@@ -197,6 +212,10 @@
       grid.classList.add(GRID_CLASS);
       grid.style.setProperty("--dor-column-count", String(columnCount));
       grid.style.setProperty("--dor-column-min", `${columnMin}px`);
+      if (CONFIGURED_MAX_WIDTH > 0) {
+        grid.classList.add(LIMITED_WIDTH_CLASS);
+        grid.style.setProperty("--dor-grid-max-width", `${CONFIGURED_MAX_WIDTH}px`);
+      }
 
       const columns = [...grid.children].filter((child) => {
         const childRect = rectOf(child);

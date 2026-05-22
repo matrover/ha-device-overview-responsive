@@ -43,6 +43,7 @@ leaves too much empty space.
 - Uses the available viewport width instead of keeping narrow default columns.
 - Applies a `2/8 - 4/8 - 2/8` distribution for three-column layouts.
 - Keeps the middle Controls/Sensors column wider on desktop screens.
+- Supports an optional maximum total column width in pixels.
 - Lets warning and repair cards span the full width.
 - Uses one column on narrow screens.
 - Re-applies after Home Assistant route changes and browser resizing.
@@ -85,8 +86,18 @@ The integration serves and registers this frontend module automatically:
 The registered URL includes a version query string, for example:
 
 ```text
-/device_overview_responsive/device-overview-responsive.js?v=0.3.5
+/device_overview_responsive/device-overview-responsive.js?v=0.3.6
 ```
+
+## Configuration
+
+Open Settings > Devices & services > Device Overview Responsive > Configure.
+
+Available option:
+
+- `Maximum total column width`: caps the complete column container width in pixels.
+
+Use `0` to keep the current unlimited responsive behavior. This is the default.
 
 ## How It Works
 
@@ -97,6 +108,8 @@ wrapping layout to that container.
 On wide screens, three-column pages use weighted columns: the outer columns get
 2 parts each and the middle column gets 4 parts. On smaller screens, the columns
 wrap naturally, and below the mobile breakpoint they stack into one column.
+When a maximum width is configured, the complete column container is centered and
+will not grow beyond that pixel value.
 
 ## Supported Use Cases
 
@@ -112,12 +125,14 @@ wrap naturally, and below the mobile breakpoint they stack into one column.
 - It only targets built-in Home Assistant device overview pages under `/config/devices/device/...`.
 - Home Assistant frontend internals can change between releases, so layout detection may need updates after major frontend changes.
 - HACS, reverse proxies, Cloudflare, browsers, and companion apps may cache old frontend modules until a hard refresh or app restart.
+- Changing the maximum width option reloads the integration and may require a browser refresh.
 
 ## Troubleshooting
 
 - Layout unchanged: confirm the integration is installed and added under Settings > Devices & services.
 - Old layout still visible: hard refresh the browser or restart the Home Assistant companion app.
 - Still seeing an old version: check that the loaded module URL contains the current `?v=` version.
+- Max width not applied: check the integration Configure dialog and refresh the browser after saving.
 - Columns look wrong after resizing: wait a second or refresh; the module reapplies after route changes and resize events.
 - A column disappears or clips: update to the latest release and hard refresh the browser.
 

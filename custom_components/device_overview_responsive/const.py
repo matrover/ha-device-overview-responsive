@@ -2,7 +2,8 @@
 
 DOMAIN = "device_overview_responsive"
 NAME = "Device Overview Responsive"
-VERSION = "0.3.5"
+VERSION = "0.3.6"
+CONF_MAX_WIDTH = "max_width"
 
 URL_BASE = f"/{DOMAIN}"
 MODULE_FILENAME = "device-overview-responsive.js"

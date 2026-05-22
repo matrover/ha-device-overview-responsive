@@ -22,17 +22,24 @@ Validate that Device Overview Responsive expands Home Assistant device overview 
    - Expected: one column.
    - Expected: side margins remain about the same as the card gap.
 
-4. SPA navigation
+4. Maximum width option
+   - Test with no value or `0`.
+   - Expected: current unlimited responsive behavior.
+   - Test with `1600`, `1200`, `800`, and `400`.
+   - Expected: the complete column container is centered and does not exceed the configured width.
+   - Expected: columns still wrap without horizontal overflow.
+
+5. SPA navigation
    - Navigate from a non-device page to a device page and back.
    - Expected: styles apply only on `/config/devices/device/...`.
    - Expected: no stale grid class remains on other pages.
 
-5. Different device content
+6. Different device content
    - Test a sparse device page and a dense device page.
    - Expected: header/full-width rows span the full grid.
    - Expected: controls, sensors, activity, scripts, automations and scenes remain readable.
 
-6. Edge cases
+7. Edge cases
    - Device page with an empty middle column.
    - Device page with a warning/repair card before the main device info.
    - Device page where a warning/repair card must span the full width while Controls, Sensors and Activity stay visible below it.
@@ -50,6 +57,7 @@ Validate that Device Overview Responsive expands Home Assistant device overview 
 - JavaScript syntax check.
 - Python compile check for the integration files.
 - Browser-rendered fixture checks at wide, medium and mobile widths.
+- Browser-rendered fixture checks with multiple configured maximum widths.
 - Home Assistant integration state is `loaded`.
 - HACS installed version matches the release.
 - Home Assistant error log contains no `device_overview` errors.

@@ -8,5 +8,18 @@
         "description": "Enable responsive columns on Home Assistant device overview pages."
       }
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "description": "Configure the responsive device overview layout.",
+        "data": {
+          "max_width": "Maximum total column width"
+        },
+        "data_description": {
+          "max_width": "Maximum width in pixels for the complete column container. Use 0 for unlimited responsive width."
+        }
+      }
+    }
   }
 }
