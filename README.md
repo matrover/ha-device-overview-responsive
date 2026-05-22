@@ -85,7 +85,7 @@ The integration serves and registers this frontend module automatically:
 The registered URL includes a version query string, for example:
 
 ```text
-/device_overview_responsive/device-overview-responsive.js?v=0.3.4
+/device_overview_responsive/device-overview-responsive.js?v=0.3.5
 ```
 
 ## How It Works

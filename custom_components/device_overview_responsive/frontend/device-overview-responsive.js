@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = "0.3.4";
+  const VERSION = "0.3.5";
   const DEFAULT_GAP = 16;
   const STYLE_ID = "device-overview-responsive-style";
   const GRID_CLASS = "device-overview-responsive-grid";
