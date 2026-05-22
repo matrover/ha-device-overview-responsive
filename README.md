@@ -86,7 +86,7 @@ The integration serves and registers this frontend module automatically:
 The registered URL includes a version query string, for example:
 
 ```text
-/device_overview_responsive/device-overview-responsive.js?v=0.3.6
+/device_overview_responsive/device-overview-responsive.js?v=0.3.7
 ```
 
 ## Configuration
@@ -98,6 +98,7 @@ Available option:
 - `Maximum total column width`: caps the complete column container width in pixels.
 
 Use `0` to keep the current unlimited responsive behavior. This is the default.
+After changing the value, refresh the browser tab.
 
 ## How It Works
 
@@ -125,7 +126,7 @@ will not grow beyond that pixel value.
 - It only targets built-in Home Assistant device overview pages under `/config/devices/device/...`.
 - Home Assistant frontend internals can change between releases, so layout detection may need updates after major frontend changes.
 - HACS, reverse proxies, Cloudflare, browsers, and companion apps may cache old frontend modules until a hard refresh or app restart.
-- Changing the maximum width option reloads the integration and may require a browser refresh.
+- Changing the maximum width option may require a browser refresh.
 
 ## Troubleshooting
 

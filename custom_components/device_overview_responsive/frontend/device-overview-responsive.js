@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = "0.3.6";
+  const VERSION = "0.3.7";
   const DEFAULT_GAP = 16;
   const STYLE_ID = "device-overview-responsive-style";
   const GRID_CLASS = "device-overview-responsive-grid";
@@ -8,12 +8,13 @@
   const MIDDLE_COLUMN_CLASS = "device-overview-responsive-middle-column";
   const INTERVAL_KEY = "__deviceOverviewResponsiveInterval";
   const DEVICE_PAGE_RE = /\/config\/devices\/device\//;
+  const CONFIG_URL = "/device_overview_responsive/config.json";
   const MODULE_SRC =
     document.currentScript?.src ||
     [...document.scripts].find((script) => script.src.includes("device-overview-responsive.js"))?.src ||
     "";
   const MODULE_PARAMS = new URL(MODULE_SRC || window.location.href).searchParams;
-  const CONFIGURED_MAX_WIDTH = Math.max(0, Number(MODULE_PARAMS.get("max_width")) || 0);
+  let configuredMaxWidth = Math.max(0, Number(MODULE_PARAMS.get("max_width")) || 0);
 
   const rectOf = (el) => {
     const rect = el?.getBoundingClientRect?.();
@@ -109,6 +110,20 @@
   };
 
   const isDeviceOverviewPage = () => DEVICE_PAGE_RE.test(window.location.pathname);
+
+  const refreshConfig = async () => {
+    try {
+      const response = await fetch(`${CONFIG_URL}?_=${Date.now()}`, {
+        cache: "no-store",
+        credentials: "same-origin",
+      });
+      if (!response.ok) return;
+      const config = await response.json();
+      configuredMaxWidth = Math.max(0, Number(config.max_width) || 0);
+    } catch (err) {
+      console.debug("Device Overview Responsive config unavailable", err);
+    }
+  };
 
   const clearLayout = () => {
     for (const root of allRoots()) {
@@ -212,9 +227,9 @@
       grid.classList.add(GRID_CLASS);
       grid.style.setProperty("--dor-column-count", String(columnCount));
       grid.style.setProperty("--dor-column-min", `${columnMin}px`);
-      if (CONFIGURED_MAX_WIDTH > 0) {
+      if (configuredMaxWidth > 0) {
         grid.classList.add(LIMITED_WIDTH_CLASS);
-        grid.style.setProperty("--dor-grid-max-width", `${CONFIGURED_MAX_WIDTH}px`);
+        grid.style.setProperty("--dor-grid-max-width", `${configuredMaxWidth}px`);
       }
 
       const columns = [...grid.children].filter((child) => {
@@ -236,7 +251,9 @@
   };
 
   window.clearInterval(window[INTERVAL_KEY]);
-  window[INTERVAL_KEY] = window.setInterval(applyLayout, 1000);
+  window[INTERVAL_KEY] = window.setInterval(() => {
+    refreshConfig().finally(applyLayout);
+  }, 1000);
   window.__deviceOverviewResponsiveApply = applyLayout;
   window.addEventListener("location-changed", () => {
     window.setTimeout(applyLayout, 0);
@@ -245,6 +262,6 @@
   });
   window.addEventListener("resize", () => window.setTimeout(applyLayout, 50));
 
-  applyLayout();
+  refreshConfig().finally(applyLayout);
   console.info(`Device Overview Responsive ${VERSION} loaded`);
 })();
