@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = "0.3.3";
+  const VERSION = "0.3.4";
   const DEFAULT_GAP = 16;
   const STYLE_ID = "device-overview-responsive-style";
   const GRID_CLASS = "device-overview-responsive-grid";
@@ -179,7 +179,7 @@
     };
 
     clearLayout();
-    if (!isDeviceOverviewPage() || viewportWidth < 520) {
+    if (!isDeviceOverviewPage()) {
       window.__deviceOverviewResponsiveLastRun = summary;
       return summary;
     }

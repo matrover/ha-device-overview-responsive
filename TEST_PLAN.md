@@ -39,6 +39,7 @@ Validate that Device Overview Responsive expands Home Assistant device overview 
    - Device page with disabled entities or configuration cards.
    - Device page where controls are rendered in a column without a plain light-DOM `ha-card`.
    - Very wide viewport.
+   - Very narrow viewport below 520px.
    - Browser resize after page load.
    - Hard refresh/new tab after HACS update.
    - Frontend module URL includes a version query string so proxy/browser cache does not keep an old module.
