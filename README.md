@@ -86,7 +86,7 @@ The integration serves and registers this frontend module automatically:
 The registered URL includes a version query string, for example:
 
 ```text
-/device_overview_responsive/device-overview-responsive.js?v=0.3.8
+/device_overview_responsive/device-overview-responsive.js?v=0.3.9
 ```
 
 ## Configuration
@@ -106,6 +106,7 @@ After changing this option:
 
 You do not need to restart Home Assistant after changing only this option.
 Installing or updating the integration through HACS still requires a Home Assistant restart.
+On narrow mobile screens, this limit is ignored so cards stay readable and inside the viewport.
 
 ## How It Works
 

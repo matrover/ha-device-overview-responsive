@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = "0.3.8";
+  const VERSION = "0.3.9";
   const DEFAULT_GAP = 16;
   const STYLE_ID = "device-overview-responsive-style";
   const GRID_CLASS = "device-overview-responsive-grid";
@@ -88,13 +88,17 @@
       }
 
       @media (max-width: 870px) {
-        .${GRID_CLASS} {
+        .${GRID_CLASS},
+        .${GRID_CLASS}.${LIMITED_WIDTH_CLASS} {
           width: auto !important;
           max-width: none !important;
+          margin-left: var(--grid-card-gap, 16px) !important;
+          margin-right: var(--grid-card-gap, 16px) !important;
         }
 
         .${GRID_CLASS} > .column {
           flex: 1 1 100% !important;
+          min-width: 0 !important;
         }
       }
     `;
