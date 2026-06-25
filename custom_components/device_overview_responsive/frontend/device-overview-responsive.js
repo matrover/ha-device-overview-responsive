@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = "0.3.9";
+  const VERSION = "0.3.10";
   const DEFAULT_GAP = 16;
   const STYLE_ID = "device-overview-responsive-style";
   const GRID_CLASS = "device-overview-responsive-grid";
@@ -143,15 +143,59 @@
     }
   };
 
+  const getColumnChildren = (node) =>
+    [...node.children].filter((child) => {
+      const childRect = rectOf(child);
+      return child.classList?.contains("column") && childRect;
+    });
+
+  const getDirectLayoutChildren = (node) =>
+    [...node.children].filter((child) =>
+      child.classList?.contains("column") ||
+      child.classList?.contains("fullwidth") ||
+      child.localName === "ha-card" ||
+      child.localName?.startsWith("ha-device-") ||
+      child.querySelector?.("ha-card")
+    );
+
+  const scoreCandidate = (node, count, viewportWidth) => {
+    const rect = rectOf(node);
+    if (!rect || rect.width < 280) return null;
+
+    const directLayoutChildren = getDirectLayoutChildren(node);
+    const columnChildren = getColumnChildren(node);
+    const layoutColumnCount = columnChildren.length || directLayoutChildren.length;
+    if (layoutColumnCount < 2) return null;
+
+    const targetWidth = Math.max(280, viewportWidth - DEFAULT_GAP * 2);
+    const className = String(node.className || "");
+    const preferredName = /content|container|grid|layout|columns/i.test(className) ? 20 : 0;
+    const score =
+      count * 10 +
+      layoutColumnCount * 12 +
+      preferredName -
+      Math.abs(rect.width - targetWidth) / 35;
+
+    return { node, score, layoutColumnCount };
+  };
+
   const findBestGrid = (root, viewportWidth) => {
-    const cards = [...root.querySelectorAll("ha-card")].filter((card) => {
+    const deviceContainers = [...root.querySelectorAll(".container")].map((node) =>
+      scoreCandidate(node, getColumnChildren(node).length + getDirectLayoutChildren(node).length, viewportWidth)
+    ).filter(Boolean);
+
+    if (deviceContainers.length) {
+      return deviceContainers.sort((a, b) => b.score - a.score)[0];
+    }
+
+    const layoutCards = [...root.querySelectorAll("ha-card, ha-device-info-card, ha-device-entities-card")].filter((card) => {
       const rect = rectOf(card);
       return rect && rect.width >= 180 && rect.height >= 60;
     });
-    if (cards.length < 3) return null;
+    if (layoutCards.length < 2) return null;
 
     const parents = new Map();
-    for (const card of cards) {
+    for (const card of layoutCards) {
       let node = card.parentElement;
       let depth = 0;
       while (node && depth < 8) {
@@ -171,33 +215,12 @@
 
     let best = null;
     for (const [node, count] of parents) {
-      if (count < 3) continue;
+      if (count < 2) continue;
       const localName = (node.localName || "").toLowerCase();
       if (blockedNames.has(localName)) continue;
 
-      const rect = rectOf(node);
-      if (!rect || rect.width < 280) continue;
-
-      const directLayoutChildren = [...node.children].filter((child) =>
-        child.localName === "ha-card" || child.querySelector?.("ha-card")
-      );
-      const columnChildren = [...node.children].filter((child) => {
-        const childRect = rectOf(child);
-        return child.classList?.contains("column") && childRect;
-      });
-      const layoutColumnCount = columnChildren.length || directLayoutChildren.length;
-      if (layoutColumnCount < 2) continue;
-
-      const targetWidth = Math.max(280, viewportWidth - DEFAULT_GAP * 2);
-      const className = String(node.className || "");
-      const preferredName = /content|container|grid|layout|columns/i.test(className) ? 20 : 0;
-      const score =
-        count * 10 +
-        layoutColumnCount * 12 +
-        preferredName -
-        Math.abs(rect.width - targetWidth) / 35;
-
-      if (!best || score > best.score) best = { node, score, layoutColumnCount };
+      const candidate = scoreCandidate(node, count, viewportWidth);
+      if (candidate && (!best || candidate.score > best.score)) best = candidate;
     }
 
     return best || null;
